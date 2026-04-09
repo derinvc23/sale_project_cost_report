@@ -39,14 +39,14 @@ class SaleProjectCostReport(models.Model):
                     so.warehouse_id                                     AS warehouse_id,
                     ppl.currency_id                                     AS currency_id,
 
-                    /* Ingresos: suma de líneas facturables */
+                    /* Ingresos: líneas donde no_facturable es false O null (líneas normales) */
                     COALESCE(
-                        SUM(CASE WHEN sol.no_facturable = false
+                        SUM(CASE WHEN sol.no_facturable IS NOT TRUE
                                  THEN sol.price_subtotal ELSE 0 END),
                         0
                     )                                                   AS ingreso,
 
-                    /* Costo: suma de materiales no facturables */
+                    /* Costo: solo líneas explícitamente marcadas como no facturables */
                     COALESCE(
                         SUM(CASE WHEN sol.no_facturable = true
                                  THEN sol.product_uom_qty * sol.costo_material
@@ -56,7 +56,7 @@ class SaleProjectCostReport(models.Model):
 
                     /* Margen = Ingreso - Costo */
                     COALESCE(
-                        SUM(CASE WHEN sol.no_facturable = false
+                        SUM(CASE WHEN sol.no_facturable IS NOT TRUE
                                  THEN sol.price_subtotal ELSE 0 END),
                         0
                     ) -
@@ -70,13 +70,13 @@ class SaleProjectCostReport(models.Model):
                     /* Margen % */
                     CASE
                         WHEN COALESCE(
-                            SUM(CASE WHEN sol.no_facturable = false
+                            SUM(CASE WHEN sol.no_facturable IS NOT TRUE
                                      THEN sol.price_subtotal ELSE 0 END), 0
                         ) = 0 THEN 0
                         ELSE ROUND(
                             (
                                 COALESCE(
-                                    SUM(CASE WHEN sol.no_facturable = false
+                                    SUM(CASE WHEN sol.no_facturable IS NOT TRUE
                                              THEN sol.price_subtotal ELSE 0 END),
                                     0
                                 ) -
@@ -90,7 +90,7 @@ class SaleProjectCostReport(models.Model):
                             /
                             NULLIF(
                                 COALESCE(
-                                    SUM(CASE WHEN sol.no_facturable = false
+                                    SUM(CASE WHEN sol.no_facturable IS NOT TRUE
                                              THEN sol.price_subtotal ELSE 0 END),
                                     0
                                 ), 0
@@ -107,6 +107,10 @@ class SaleProjectCostReport(models.Model):
                 LEFT JOIN sale_order_line sol ON sol.order_id = so.id
                 LEFT JOIN product_pricelist ppl ON ppl.id = so.pricelist_id
                 WHERE so.state IN ('sale', 'done')
+                  AND EXISTS (
+                      SELECT 1 FROM sale_order_line
+                      WHERE order_id = so.id AND no_facturable = true
+                  )
                 GROUP BY
                     so.id, so.name, so.partner_id, so.date_order,
                     so.warehouse_id, ppl.currency_id
