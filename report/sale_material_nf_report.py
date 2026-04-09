@@ -50,16 +50,15 @@ class SaleMaterialNfReport(models.Model):
                 JOIN product_template pt ON pt.id = pp.product_tmpl_id
                 LEFT JOIN product_pricelist ppl ON ppl.id = so.pricelist_id
                 LEFT JOIN (
-                    SELECT DISTINCT ON (sir.sale_id)
-                           sir.sale_id,
+                    SELECT DISTINCT ON (ai.origin)
+                           ai.origin       AS sale_name,
                            ai.number       AS invoice_number,
                            ai.date_invoice AS invoice_date
-                    FROM sale_order_invoice_rel sir
-                    JOIN account_invoice ai ON ai.id = sir.invoice_id
+                    FROM account_invoice ai
                     WHERE ai.type = 'out_invoice'
                       AND ai.state NOT IN ('cancel', 'draft')
-                    ORDER BY sir.sale_id, ai.date_invoice DESC
-                ) inv ON inv.sale_id = so.id
+                    ORDER BY ai.origin, ai.date_invoice DESC
+                ) inv ON inv.sale_name = so.name
                 WHERE so.state IN ('sale', 'done')
                   AND sol.no_facturable = true
             )
