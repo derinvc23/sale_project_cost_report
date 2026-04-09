@@ -39,6 +39,9 @@ class SaleCostWizard(models.TransientModel):
         if self.warehouse_id:
             domain.append(('warehouse_id', '=', self.warehouse_id.id))
 
+        search_view = self.env.ref(
+            'sale_project_cost_report.view_sale_project_cost_report_search'
+        )
         return {
             'type': 'ir.actions.act_window',
             'name': u'Costos y Márgenes por Proyecto',
@@ -46,5 +49,7 @@ class SaleCostWizard(models.TransientModel):
             'view_type': 'tree',
             'view_mode': 'tree',
             'domain': domain,
-            'context': self._context,
+            'context': {},
+            'search_view_id': [search_view.id, search_view.name],
+            'target': 'current',
         }
