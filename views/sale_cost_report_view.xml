@@ -71,6 +71,7 @@
                   name="Costos y Márgenes por Proyecto"
                   parent="sales_team.menu_sale_report"
                   action="action_sale_cost_wizard"
+                  groups="sale_material_no_facturable.group_no_facturable_user"
                   sequence="20"/>
 
         <!-- Menú en Contabilidad > Reportes -->
@@ -78,6 +79,7 @@
                   name="Costos y Márgenes por Proyecto"
                   parent="account.menu_finance_reports"
                   action="action_sale_cost_wizard"
+                  groups="sale_material_no_facturable.group_no_facturable_user"
                   sequence="50"/>
 
     </data>

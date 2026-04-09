@@ -76,7 +76,6 @@
             <field name="res_model">sale.material.nf.report</field>
             <field name="view_type">tree</field>
             <field name="view_mode">tree,pivot</field>
-            <field name="view_id" ref="view_sale_material_nf_report_tree"/>
             <field name="search_view_id" ref="view_sale_material_nf_report_search"/>
         </record>
 
@@ -85,6 +84,7 @@
                   name="Materiales No Facturados"
                   parent="sales_team.menu_sale_report"
                   action="action_sale_material_nf_report"
+                  groups="sale_material_no_facturable.group_no_facturable_user"
                   sequence="21"/>
 
         <!-- Menú en Contabilidad > Reportes -->
@@ -92,6 +92,7 @@
                   name="Materiales No Facturados"
                   parent="account.menu_finance_reports"
                   action="action_sale_material_nf_report"
+                  groups="sale_material_no_facturable.group_no_facturable_user"
                   sequence="51"/>
 
     </data>
