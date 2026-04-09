@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vista Lista del Reporte -->
+        <record id="view_sale_project_cost_report_list" model="ir.ui.view">
+            <field name="name">sale.project.cost.report.list</field>
+            <field name="model">sale.project.cost.report</field>
+            <field name="arch" type="xml">
+                <tree string="Costos y Márgenes por Proyecto"
+                      decoration-danger="margen &lt; 0"
+                      decoration-warning="margen_pct &lt; 10 and margen &gt;= 0"
+                      decoration-success="margen_pct &gt;= 10">
+                    <field name="date_order"/>
+                    <field name="order_name" string="N° OV"/>
+                    <field name="order_id" invisible="1"/>
+                    <field name="partner_id" string="Cliente"/>
+                    <field name="warehouse_id" string="Sucursal"/>
+                    <field name="cant_materiales" string="Mat. NF"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="ingreso" widget="monetary"
+                           options="{'currency_field': 'currency_id'}"/>
+                    <field name="costo" widget="monetary"
+                           options="{'currency_field': 'currency_id'}"/>
+                    <field name="margen" widget="monetary"
+                           options="{'currency_field': 'currency_id'}"/>
+                    <field name="margen_pct" string="Margen %" suffix="%"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vista Búsqueda -->
+        <record id="view_sale_project_cost_report_search" model="ir.ui.view">
+            <field name="name">sale.project.cost.report.search</field>
+            <field name="model">sale.project.cost.report</field>
+            <field name="arch" type="xml">
+                <search string="Buscar Proyecto">
+                    <field name="order_name" string="N° OV"/>
+                    <field name="partner_id" string="Cliente"/>
+                    <field name="warehouse_id" string="Sucursal"/>
+                    <filter string="Este mes" name="filter_this_month"
+                            domain="[('date_order', '&gt;=', (context_today()).strftime('%Y-%m-01')),
+                                     ('date_order', '&lt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="Margen negativo" name="filter_negative_margin"
+                            domain="[('margen', '&lt;', 0)]"/>
+                    <separator/>
+                    <group expand="0" string="Agrupar por">
+                        <filter string="Cliente" name="group_partner"
+                                context="{'group_by': 'partner_id'}"/>
+                        <filter string="Sucursal" name="group_warehouse"
+                                context="{'group_by': 'warehouse_id'}"/>
+                        <filter string="Mes" name="group_month"
+                                context="{'group_by': 'date_order:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Acción para abrir el reporte directo (sin wizard) -->
+        <record id="action_sale_project_cost_report" model="ir.actions.act_window">
+            <field name="name">Costos y Márgenes por Proyecto</field>
+            <field name="res_model">sale.project.cost.report</field>
+            <field name="view_type">list</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_sale_project_cost_report_list"/>
+            <field name="search_view_id" ref="view_sale_project_cost_report_search"/>
+        </record>
+
+        <!-- Menú en Ventas > Reportes -->
+        <menuitem id="menu_sale_project_cost_report"
+                  name="Costos y Márgenes por Proyecto"
+                  parent="sales_team.menu_sale_report"
+                  action="action_sale_cost_wizard"
+                  sequence="20"/>
+
+        <!-- Menú en Contabilidad > Reportes -->
+        <menuitem id="menu_sale_project_cost_report_account"
+                  name="Costos y Márgenes por Proyecto"
+                  parent="account.menu_finance_reports"
+                  action="action_sale_cost_wizard"
+                  sequence="50"/>
+
+    </data>
+</odoo>

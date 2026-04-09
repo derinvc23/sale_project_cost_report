@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vista Árbol (detalle línea a línea) -->
+        <record id="view_sale_material_nf_report_tree" model="ir.ui.view">
+            <field name="name">sale.material.nf.report.tree</field>
+            <field name="model">sale.material.nf.report</field>
+            <field name="arch" type="xml">
+                <tree string="Materiales No Facturables">
+                    <field name="date_order"/>
+                    <field name="order_name" string="N° OV"/>
+                    <field name="partner_id" string="Cliente"/>
+                    <field name="warehouse_id" string="Sucursal"/>
+                    <field name="product_categ_id" string="Categoría"/>
+                    <field name="product_id" string="Producto"/>
+                    <field name="uom_id" string="Unidad"/>
+                    <field name="qty" string="Cantidad" sum="Total Qty"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="costo_material" string="Costo Unit."
+                           widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="costo_total" string="Costo Total"
+                           widget="monetary" options="{'currency_field': 'currency_id'}"
+                           sum="Total Costo"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vista Pivot -->
+        <record id="view_sale_material_nf_report_pivot" model="ir.ui.view">
+            <field name="name">sale.material.nf.report.pivot</field>
+            <field name="model">sale.material.nf.report</field>
+            <field name="arch" type="xml">
+                <pivot string="Materiales No Facturables" disable_linking="False">
+                    <!-- Filas: categoría y producto -->
+                    <field name="product_categ_id" type="row"/>
+                    <field name="product_id" type="row"/>
+                    <!-- Columnas: mes -->
+                    <field name="date_order" interval="month" type="col"/>
+                    <!-- Medidas visibles por defecto -->
+                    <field name="qty" type="measure"/>
+                    <field name="costo_total" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Vista Búsqueda -->
+        <record id="view_sale_material_nf_report_search" model="ir.ui.view">
+            <field name="name">sale.material.nf.report.search</field>
+            <field name="model">sale.material.nf.report</field>
+            <field name="arch" type="xml">
+                <search string="Buscar Materiales NF">
+                    <field name="order_name" string="N° OV"/>
+                    <field name="partner_id" string="Cliente"/>
+                    <field name="product_id" string="Producto"/>
+                    <field name="product_categ_id" string="Categoría"/>
+                    <field name="warehouse_id" string="Sucursal"/>
+                    <separator/>
+                    <group expand="1" string="Agrupar por">
+                        <filter string="Producto" name="group_product"
+                                context="{'group_by': 'product_id'}"/>
+                        <filter string="Categoría" name="group_categ"
+                                context="{'group_by': 'product_categ_id'}"/>
+                        <filter string="Cliente" name="group_partner"
+                                context="{'group_by': 'partner_id'}"/>
+                        <filter string="Sucursal" name="group_warehouse"
+                                context="{'group_by': 'warehouse_id'}"/>
+                        <filter string="Mes" name="group_month"
+                                context="{'group_by': 'date_order:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Acción con árbol + pivot -->
+        <record id="action_sale_material_nf_report" model="ir.actions.act_window">
+            <field name="name">Materiales No Facturados por Proyecto</field>
+            <field name="res_model">sale.material.nf.report</field>
+            <field name="view_type">list</field>
+            <field name="view_mode">tree,pivot</field>
+            <field name="view_id" ref="view_sale_material_nf_report_tree"/>
+            <field name="search_view_id" ref="view_sale_material_nf_report_search"/>
+        </record>
+
+        <!-- Menú en Ventas > Reportes -->
+        <menuitem id="menu_sale_material_nf_report"
+                  name="Materiales No Facturados"
+                  parent="sales_team.menu_sale_report"
+                  action="action_sale_material_nf_report"
+                  sequence="21"/>
+
+        <!-- Menú en Contabilidad > Reportes -->
+        <menuitem id="menu_sale_material_nf_report_account"
+                  name="Materiales No Facturados"
+                  parent="account.menu_finance_reports"
+                  action="action_sale_material_nf_report"
+                  sequence="51"/>
+
+    </data>
+</odoo>
