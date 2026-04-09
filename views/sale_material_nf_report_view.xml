@@ -31,13 +31,9 @@
             <field name="name">sale.material.nf.report.pivot</field>
             <field name="model">sale.material.nf.report</field>
             <field name="arch" type="xml">
-                <pivot string="Materiales No Facturables" disable_linking="False">
-                    <!-- Filas: categoría y producto -->
+                <pivot string="Materiales No Facturables">
                     <field name="product_categ_id" type="row"/>
                     <field name="product_id" type="row"/>
-                    <!-- Columnas: mes -->
-                    <field name="date_order" interval="month" type="col"/>
-                    <!-- Medidas visibles por defecto -->
                     <field name="qty" type="measure"/>
                     <field name="costo_total" type="measure"/>
                 </pivot>

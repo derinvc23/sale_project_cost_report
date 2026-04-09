@@ -17,9 +17,9 @@ class SaleMaterialNfReport(models.Model):
     product_id = fields.Many2one('product.product', string='Producto', readonly=True)
     product_categ_id = fields.Many2one('product.category', string=u'Categoría', readonly=True)
     uom_id = fields.Many2one('product.uom', string='Unidad', readonly=True)
-    qty = fields.Float(string='Cantidad', readonly=True)
-    costo_material = fields.Float(string='Costo Unit.', readonly=True)
-    costo_total = fields.Float(string='Costo Total', readonly=True)
+    qty = fields.Float(string='Cantidad', readonly=True, group_operator='sum')
+    costo_material = fields.Float(string='Costo Unit.', readonly=True, group_operator='avg')
+    costo_total = fields.Float(string='Costo Total', readonly=True, group_operator='sum')
 
     @api.model_cr
     def init(self):
