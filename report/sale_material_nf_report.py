@@ -33,7 +33,7 @@ class SaleMaterialNfReport(models.Model):
                     so.partner_id                   AS partner_id,
                     so.date_order::date             AS date_order,
                     so.warehouse_id                 AS warehouse_id,
-                    so.currency_id                  AS currency_id,
+                    ppl.currency_id                 AS currency_id,
                     sol.product_id                  AS product_id,
                     pt.categ_id                     AS product_categ_id,
                     sol.product_uom                 AS uom_id,
@@ -44,6 +44,7 @@ class SaleMaterialNfReport(models.Model):
                 JOIN sale_order_line sol ON sol.order_id = so.id
                 JOIN product_product pp  ON pp.id = sol.product_id
                 JOIN product_template pt ON pt.id = pp.product_tmpl_id
+                LEFT JOIN product_pricelist ppl ON ppl.id = so.pricelist_id
                 WHERE so.state IN ('sale', 'done')
                   AND sol.no_facturable = true
             )

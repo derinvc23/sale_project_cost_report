@@ -37,7 +37,7 @@ class SaleProjectCostReport(models.Model):
                     so.partner_id                                       AS partner_id,
                     so.date_order::date                                 AS date_order,
                     so.warehouse_id                                     AS warehouse_id,
-                    so.currency_id                                      AS currency_id,
+                    ppl.currency_id                                     AS currency_id,
 
                     /* Ingresos: suma de líneas facturables */
                     COALESCE(
@@ -105,9 +105,10 @@ class SaleProjectCostReport(models.Model):
 
                 FROM sale_order so
                 LEFT JOIN sale_order_line sol ON sol.order_id = so.id
+                LEFT JOIN product_pricelist ppl ON ppl.id = so.pricelist_id
                 WHERE so.state IN ('sale', 'done')
                 GROUP BY
                     so.id, so.name, so.partner_id, so.date_order,
-                    so.warehouse_id, so.currency_id
+                    so.warehouse_id, ppl.currency_id
             )
         """)
