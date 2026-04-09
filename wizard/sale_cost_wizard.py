@@ -43,7 +43,7 @@ class SaleCostWizard(models.TransientModel):
             'type': 'ir.actions.act_window',
             'name': u'Costos y Márgenes por Proyecto',
             'res_model': 'sale.project.cost.report',
-            'view_type': 'list',
+            'view_type': 'tree',
             'view_mode': 'tree',
             'domain': domain,
             'context': self._context,

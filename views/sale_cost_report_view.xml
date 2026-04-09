@@ -60,7 +60,7 @@
         <record id="action_sale_project_cost_report" model="ir.actions.act_window">
             <field name="name">Costos y Márgenes por Proyecto</field>
             <field name="res_model">sale.project.cost.report</field>
-            <field name="view_type">list</field>
+            <field name="view_type">tree</field>
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_sale_project_cost_report_list"/>
             <field name="search_view_id" ref="view_sale_project_cost_report_search"/>
