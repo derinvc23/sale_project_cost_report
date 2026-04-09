@@ -10,6 +10,8 @@ class SaleMaterialNfReport(models.Model):
 
     order_id = fields.Many2one('sale.order', string=u'Orden de Venta', readonly=True)
     order_name = fields.Char(string=u'N° OV', readonly=True)
+    invoice_name = fields.Char(string=u'N° Factura', readonly=True)
+    invoice_date = fields.Date(string='Fecha Factura', readonly=True)
     partner_id = fields.Many2one('res.partner', string='Cliente', readonly=True)
     date_order = fields.Date(string='Fecha OV', readonly=True)
     warehouse_id = fields.Many2one('stock.warehouse', string='Sucursal', readonly=True)
@@ -30,6 +32,8 @@ class SaleMaterialNfReport(models.Model):
                     sol.id                          AS id,
                     so.id                           AS order_id,
                     so.name                         AS order_name,
+                    inv.invoice_number              AS invoice_name,
+                    inv.invoice_date                AS invoice_date,
                     so.partner_id                   AS partner_id,
                     so.date_order::date             AS date_order,
                     so.warehouse_id                 AS warehouse_id,
@@ -45,6 +49,17 @@ class SaleMaterialNfReport(models.Model):
                 JOIN product_product pp  ON pp.id = sol.product_id
                 JOIN product_template pt ON pt.id = pp.product_tmpl_id
                 LEFT JOIN product_pricelist ppl ON ppl.id = so.pricelist_id
+                LEFT JOIN (
+                    SELECT DISTINCT ON (sir.sale_id)
+                           sir.sale_id,
+                           ai.number       AS invoice_number,
+                           ai.date_invoice AS invoice_date
+                    FROM sale_order_invoice_rel sir
+                    JOIN account_invoice ai ON ai.id = sir.invoice_id
+                    WHERE ai.type = 'out_invoice'
+                      AND ai.state NOT IN ('cancel', 'draft')
+                    ORDER BY sir.sale_id, ai.date_invoice DESC
+                ) inv ON inv.sale_id = so.id
                 WHERE so.state IN ('sale', 'done')
                   AND sol.no_facturable = true
             )

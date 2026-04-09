@@ -10,6 +10,8 @@
                 <tree string="Materiales No Facturables">
                     <field name="date_order"/>
                     <field name="order_name" string="N° OV"/>
+                    <field name="invoice_name" string="N° Factura"/>
+                    <field name="invoice_date" string="Fecha Factura"/>
                     <field name="partner_id" string="Cliente"/>
                     <field name="warehouse_id" string="Sucursal"/>
                     <field name="product_categ_id" string="Categoría"/>
