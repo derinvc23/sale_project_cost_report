@@ -74,7 +74,7 @@
         <record id="action_sale_material_nf_report" model="ir.actions.act_window">
             <field name="name">Materiales No Facturados por Proyecto</field>
             <field name="res_model">sale.material.nf.report</field>
-            <field name="view_type">tree</field>
+            <field name="view_type">form</field>
             <field name="view_mode">tree,pivot</field>
             <field name="search_view_id" ref="view_sale_material_nf_report_search"/>
         </record>
