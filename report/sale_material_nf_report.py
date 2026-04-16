@@ -19,9 +19,11 @@ class SaleMaterialNfReport(models.Model):
     product_id = fields.Many2one('product.product', string='Producto', readonly=True)
     product_categ_id = fields.Many2one('product.category', string=u'Categoría', readonly=True)
     uom_id = fields.Many2one('product.uom', string='Unidad', readonly=True)
+    kg_weight = fields.Float(string='Peso (Kg)', readonly=True, group_operator='avg')
     qty = fields.Float(string='Cantidad', readonly=True, group_operator='sum')
     costo_material = fields.Float(string='Costo Unit.', readonly=True, group_operator='avg')
     costo_total = fields.Float(string='Costo Total', readonly=True, group_operator='sum')
+    importe_facturado = fields.Float(string='Total Facturado', readonly=True, group_operator='avg')
 
     @api.model_cr
     def init(self):
@@ -41,9 +43,11 @@ class SaleMaterialNfReport(models.Model):
                     sol.product_id                  AS product_id,
                     pt.categ_id                     AS product_categ_id,
                     sol.product_uom                 AS uom_id,
+                    pt.kg_weight                    AS kg_weight,
                     sol.product_uom_qty             AS qty,
                     sol.costo_material              AS costo_material,
-                    sol.product_uom_qty * sol.costo_material AS costo_total
+                    sol.product_uom_qty * sol.costo_material AS costo_total,
+                    COALESCE(inv.importe_facturado, 0) AS importe_facturado
                 FROM sale_order so
                 JOIN sale_order_line sol ON sol.order_id = so.id
                 JOIN product_product pp  ON pp.id = sol.product_id
@@ -51,9 +55,10 @@ class SaleMaterialNfReport(models.Model):
                 LEFT JOIN product_pricelist ppl ON ppl.id = so.pricelist_id
                 LEFT JOIN (
                     SELECT DISTINCT ON (ai.origin)
-                           ai.origin       AS sale_name,
-                           ai.number       AS invoice_number,
-                           ai.date_invoice AS invoice_date
+                           ai.origin         AS sale_name,
+                           ai.number         AS invoice_number,
+                           ai.date_invoice   AS invoice_date,
+                           ai.amount_total   AS importe_facturado
                     FROM account_invoice ai
                     WHERE ai.type = 'out_invoice'
                       AND ai.state NOT IN ('cancel', 'draft')

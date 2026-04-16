@@ -17,6 +17,7 @@
                     <field name="product_categ_id" string="Categoría"/>
                     <field name="product_id" string="Producto"/>
                     <field name="uom_id" string="Unidad"/>
+                    <field name="kg_weight" string="Peso (Kg)"/>
                     <field name="qty" string="Cantidad" sum="Total Qty"/>
                     <field name="currency_id" invisible="1"/>
                     <field name="costo_material" string="Costo Unit."
@@ -24,6 +25,8 @@
                     <field name="costo_total" string="Costo Total"
                            widget="monetary" options="{'currency_field': 'currency_id'}"
                            sum="Total Costo"/>
+                    <field name="importe_facturado" string="Total Facturado"
+                           widget="monetary" options="{'currency_field': 'currency_id'}"/>
                 </tree>
             </field>
         </record>
