@@ -50,9 +50,9 @@ class SaleMaterialNfReport(models.Model):
                     sol.product_uom_qty             AS qty,
                     sol.costo_material              AS costo_material,
                     sol.product_uom_qty * sol.costo_material AS costo_total,
-                    pt.lst_price                    AS precio_venta,
+                    pt.list_price                    AS precio_venta,
                     sol.discount                    AS descuento,
-                    pt.lst_price * (1 - COALESCE(sol.discount, 0) / 100) AS precio_con_descuento,
+                    pt.list_price * (1 - COALESCE(sol.discount, 0) / 100) AS precio_con_descuento,
                     COALESCE(inv.importe_facturado, 0) AS importe_facturado
                 FROM sale_order so
                 JOIN sale_order_line sol ON sol.order_id = so.id
