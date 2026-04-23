@@ -24,8 +24,9 @@ class SaleMaterialNfReport(models.Model):
     costo_material = fields.Float(string='Costo Unit.', readonly=True, group_operator='avg')
     costo_total = fields.Float(string='Costo Total', readonly=True, group_operator='sum')
     precio_venta = fields.Float(string='Precio Venta', readonly=True, group_operator='avg')
-    descuento = fields.Float(string='Descuento %', readonly=True, group_operator='avg')
+    descuento = fields.Float(string='Descuento', readonly=True, group_operator='avg')
     precio_con_descuento = fields.Float(string='Precio con Des.', readonly=True, group_operator='avg')
+    precio_venta_total = fields.Float(string='Precio Venta Total', readonly=True, group_operator='sum')
     importe_facturado = fields.Float(string='Total Facturado', readonly=True, group_operator='avg')
 
     @api.model_cr
@@ -51,8 +52,10 @@ class SaleMaterialNfReport(models.Model):
                     sol.costo_material              AS costo_material,
                     sol.product_uom_qty * sol.costo_material AS costo_total,
                     pt.list_price                    AS precio_venta,
-                    sol.discount                    AS descuento,
+                    pt.list_price * COALESCE(sol.discount, 0) / 100 AS descuento,
                     pt.list_price * (1 - COALESCE(sol.discount, 0) / 100) AS precio_con_descuento,
+                    pt.list_price * (1 - COALESCE(sol.discount, 0) / 100)
+                        * sol.product_uom_qty                            AS precio_venta_total,
                     COALESCE(inv.importe_facturado, 0) AS importe_facturado
                 FROM sale_order so
                 JOIN sale_order_line sol ON sol.order_id = so.id
