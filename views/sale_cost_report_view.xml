@@ -18,7 +18,9 @@
                     <field name="warehouse_id" string="Sucursal"/>
                     <field name="cant_materiales" string="Mat. NF"/>
                     <field name="currency_id" invisible="1"/>
-                    <field name="ingreso" widget="monetary"
+                    <field name="ingreso" string="Total Base" widget="monetary"
+                           options="{'currency_field': 'currency_id'}"/>
+                    <field name="total_impuesto" string="Total c/ Impuesto" widget="monetary"
                            options="{'currency_field': 'currency_id'}"/>
                     <field name="costo" widget="monetary"
                            options="{'currency_field': 'currency_id'}"/>

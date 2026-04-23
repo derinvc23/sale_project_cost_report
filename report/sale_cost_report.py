@@ -14,8 +14,10 @@ class SaleProjectCostReport(models.Model):
     date_order = fields.Date(string='Fecha', readonly=True)
     warehouse_id = fields.Many2one('stock.warehouse', string='Sucursal', readonly=True)
     currency_id = fields.Many2one('res.currency', string='Moneda', readonly=True)
-    ingreso = fields.Float(string='Ingreso', readonly=True,
-                           help=u'Suma de las líneas facturables (precio subtotal)')
+    ingreso = fields.Float(string='Total Base', readonly=True,
+                           help=u'Suma de las líneas facturables (precio subtotal sin impuesto)')
+    total_impuesto = fields.Float(string='Total c/ Impuesto', readonly=True,
+                                  help=u'Suma de las líneas facturables (precio total con impuesto)')
     costo = fields.Float(string='Costo Materiales', readonly=True,
                          help=u'Suma de materiales no facturables (cantidad × costo unitario)')
     margen = fields.Float(string='Margen', readonly=True,
@@ -39,12 +41,19 @@ class SaleProjectCostReport(models.Model):
                     so.warehouse_id                                     AS warehouse_id,
                     ppl.currency_id                                     AS currency_id,
 
-                    /* Ingresos: líneas donde no_facturable es false O null (líneas normales) */
+                    /* Total Base: precio subtotal sin impuesto de líneas facturables */
                     COALESCE(
                         SUM(CASE WHEN sol.no_facturable IS NOT TRUE
                                  THEN sol.price_subtotal ELSE 0 END),
                         0
                     )                                                   AS ingreso,
+
+                    /* Total con Impuesto: precio total con impuesto de líneas facturables */
+                    COALESCE(
+                        SUM(CASE WHEN sol.no_facturable IS NOT TRUE
+                                 THEN sol.price_total ELSE 0 END),
+                        0
+                    )                                                   AS total_impuesto,
 
                     /* Costo: solo líneas explícitamente marcadas como no facturables */
                     COALESCE(
