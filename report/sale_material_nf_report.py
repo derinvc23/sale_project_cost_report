@@ -24,7 +24,8 @@ class SaleMaterialNfReport(models.Model):
     costo_material = fields.Float(string='Costo Unit.', readonly=True, group_operator='avg')
     costo_total = fields.Float(string='Costo Total', readonly=True, group_operator='sum')
     precio_venta = fields.Float(string='Precio Venta', readonly=True, group_operator='avg')
-    descuento = fields.Float(string='Descuento', readonly=True, group_operator='avg')
+    descuento_pct = fields.Float(string='Descuento %', readonly=True, group_operator='avg')
+    descuento = fields.Float(string='Descuento Total', readonly=True, group_operator='sum')
     precio_con_descuento = fields.Float(string='Precio con Des.', readonly=True, group_operator='avg')
     precio_venta_total = fields.Float(string='Precio Venta Total', readonly=True, group_operator='sum')
     importe_facturado = fields.Float(string='Total Facturado', readonly=True, group_operator='avg')
@@ -52,7 +53,9 @@ class SaleMaterialNfReport(models.Model):
                     sol.costo_material              AS costo_material,
                     sol.product_uom_qty * sol.costo_material AS costo_total,
                     pt.list_price                    AS precio_venta,
-                    pt.list_price * COALESCE(sol.discount, 0) / 100 AS descuento,
+                    COALESCE(sol.discount, 0)                        AS descuento_pct,
+                    pt.list_price * COALESCE(sol.discount, 0) / 100
+                        * sol.product_uom_qty                        AS descuento,
                     pt.list_price * (1 - COALESCE(sol.discount, 0) / 100) AS precio_con_descuento,
                     pt.list_price * (1 - COALESCE(sol.discount, 0) / 100)
                         * sol.product_uom_qty                            AS precio_venta_total,

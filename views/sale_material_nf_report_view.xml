@@ -27,8 +27,10 @@
                            sum="Total Costo"/>
                     <field name="precio_venta" string="Precio Venta"
                            widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                    <field name="descuento" string="Descuento"
-                           widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="descuento_pct" string="Descuento %" suffix="%"/>
+                    <field name="descuento" string="Descuento Total"
+                           widget="monetary" options="{'currency_field': 'currency_id'}"
+                           sum="Total Descuento"/>
                     <field name="precio_con_descuento" string="Precio con Des."
                            widget="monetary" options="{'currency_field': 'currency_id'}"/>
                     <field name="precio_venta_total" string="Precio Venta Total"
